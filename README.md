@@ -39,7 +39,7 @@ IAN'S MUSIC 是一款基于 [Electron](https://www.electronjs.org/) 构建的跨
 
 ### 界面与视觉
 
-- **Apple Music 风格视觉器** — 流动渐变背景，随音乐律动
+- **视觉风格** — 流动渐变背景，随音乐律动
 - **毛玻璃 UI** — 全界面 backdrop-filter 玻璃质感
 - **AI 主题生成** — 输入描述词自动生成配色方案（由 DeepSeek 驱动）
 - **多款主题色** — 内置色彩方案 + 自动取色模式
