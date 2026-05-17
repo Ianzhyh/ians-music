@@ -274,6 +274,11 @@ function _isUrlAllowed(url) {
   try {
     const parsedUrl = new URL(url);
     const hostname = parsedUrl.hostname;
+    const port = parseInt(parsedUrl.port, 10) || (parsedUrl.protocol === 'https:' ? 443 : 80);
+
+    if ((hostname === '127.0.0.1' || hostname === 'localhost') && port === PORT) {
+      return true;
+    }
 
     const isAllowed = ALLOWED_DOMAINS.some(domain => hostname === domain || hostname.endsWith('.' + domain));
     if (!isAllowed) return false;
