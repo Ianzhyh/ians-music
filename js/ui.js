@@ -330,7 +330,7 @@ function openQRLogin(platform) {
 
     const modal = document.getElementById('qr-login-modal');
     const title = document.getElementById('qr-login-title');
-    const status = document.getElementById('qr-login-status');
+    const status = document.getElementById('txt-qr-fetching');
     const hint = document.getElementById('qr-login-platform-hint');
     const img = document.getElementById('qr-code-img');
     const spinner = document.getElementById('qr-code-spinner');

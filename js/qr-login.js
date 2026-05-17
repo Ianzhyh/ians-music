@@ -644,7 +644,7 @@ function toggleManualCookie() {
 
 function submitManualCookie() {
     var textarea = document.getElementById('qr-manual-textarea');
-    var status = document.getElementById('qr-login-status');
+    var status = document.getElementById('txt-qr-fetching');
     if (!textarea) return;
     var cookie = textarea.value.trim();
     if (!cookie) {
