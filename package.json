@@ -1,6 +1,6 @@
 {
   "name": "ians-music",
-  "version": "2.4.0",
+  "version": "2.4.1",
   "description": "IAN'S MUSIC — 多平台桌面音乐播放器",
   "main": "electron-main.js",
   "author": "Ian",

@@ -462,7 +462,9 @@ function setLanguage(lang) {
     curLang = lang;
     localStorage.setItem('am_lang', lang);
     const t = i18n[lang];
+    const titlebarKeys = ['minimize', 'maximize', 'fullscreen', 'exitFullscreen', 'closeWin'];
     for(let k in t) {
+        if (titlebarKeys.includes(k)) continue;
         const els = document.querySelectorAll('#txt-' + k);
         if(els.length > 0) els.forEach(el => el.innerText = t[k]);
     }
