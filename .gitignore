@@ -1,0 +1,54 @@
+# ============================================================
+# IanMusic — .gitignore
+# ============================================================
+
+# Dependencies
+node_modules/
+
+# Build output (Electron)
+dist/
+release/
+
+# Copyright music files — DO NOT COMMIT
+songs/
+*.mp3
+*.flac
+*.wav
+*.aac
+*.ogg
+*.m4a
+*.wma
+
+# Environment & secrets
+.env
+**/.env
+cookies.json
+**/cookies.json
+encrypted_qrc.hex
+**/encrypted_qrc.hex
+
+# Logs
+*.log
+build-log.txt
+npm-debug.log*
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# AI agent working files
+.trae/
+
+# Backup files
+*.bak
+*.bak.*
+
+# Misc
+coverage/
