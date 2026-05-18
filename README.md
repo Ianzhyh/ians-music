@@ -39,7 +39,7 @@ IAN'S MUSIC 是一款基于 [Electron](https://www.electronjs.org/) 构建的跨
 
 ### 界面与视觉
 
-- **视觉风格** — 流动渐变背景，随音乐律动
+- **Apple Music 风格视觉器** — 流动渐变背景，随音乐律动
 - **毛玻璃 UI** — 全界面 backdrop-filter 玻璃质感
 - **AI 主题生成** — 输入描述词自动生成配色方案（由 DeepSeek 驱动）
 - **多款主题色** — 内置色彩方案 + 自动取色模式
@@ -47,7 +47,7 @@ IAN'S MUSIC 是一款基于 [Electron](https://www.electronjs.org/) 构建的跨
 
 ### 歌词系统
 
-- **QRC 逐字歌词** — 支持 QQ 音乐逐字时间戳歌词
+- **QRC 逐字歌词** — 支持 QQ 音乐逐字时间戳歌词（卡拉 OK 模式）
 - **桌面歌词** — 独立悬浮歌词窗口
 - **在线歌词搜索** — 多源歌词检索与手动更换
 - **双语翻译** — AI 自动翻译 + 官方翻译兜底
@@ -70,16 +70,16 @@ IAN'S MUSIC 是一款基于 [Electron](https://www.electronjs.org/) 构建的跨
 
 ## 技术栈
 
-| 类别 | 技术 |
-| --- | --- |
-| **框架** | Electron 33 |
-| **前端** | 原生 HTML / CSS / JavaScript（无框架依赖） |
-| **后端 API** | Node.js (Express) + Meting API |
-| **数据存储** | localStorage / localforage |
-| **构建** | electron-builder (NSIS 安装包) |
-| **AI** | DeepSeek API（兼容 OpenAI 格式） |
-| **歌词解密** | Triple DES（QQ 音乐 QRC 格式） |
-| **PWA** | Service Worker + Manifest |
+| 类别         | 技术                                |
+| ---------- | --------------------------------- |
+| **框架**     | Electron 33                       |
+| **前端**     | 原生 HTML / CSS / JavaScript（无框架依赖） |
+| **后端 API** | Node.js (Express) + Meting API    |
+| **数据存储**   | localStorage / localforage        |
+| **构建**     | electron-builder (NSIS 安装包)       |
+| **AI**     | DeepSeek API（兼容 OpenAI 格式）        |
+| **歌词解密**   | Triple DES（QQ 音乐 QRC 格式）          |
+| **PWA**    | Service Worker + Manifest         |
 
 ***
 
@@ -194,13 +194,13 @@ node server.js
 
 在设置面板中配置 DeepSeek（或兼容 OpenAI 格式的）API：
 
-| 参数 | 说明 | 示例 |
-| --- | --- | --- |
-| API Key | DeepSeek / SiliconFlow API 密钥 | `sk-xxxx...` |
-| Base URL | API 地址 | `https://api.siliconflow.cn` |
-| Model | 模型名称 | `deepseek-ai/DeepSeek-V3` |
+| 参数       | 说明                            | 示例                           |
+| -------- | ----------------------------- | ---------------------------- |
+| API Key  | DeepSeek / SiliconFlow API 密钥 | `sk-xxxx...`                 |
+| Base URL | API 地址                        | `https://api.siliconflow.cn` |
+| Model    | 模型名称                          | `deepseek-ai/DeepSeek-V3`    |
 
-国内推荐使用 [SiliconFlow（硅基流动）](https://cloud.siliconflow.cn)，注册即送额度。
+<br />
 
 ### 音乐 API 配置
 
@@ -252,3 +252,4 @@ npx electron-builder
 - [DeepSeek](https://www.deepseek.com/) — 大语言模型 API
 - [SiliconFlow](https://www.siliconflow.cn/) — 国内 API 代理加速
 - 各音乐平台提供的公开 API 接口
+
