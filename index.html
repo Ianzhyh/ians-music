@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#fa2d48">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <title>IAN'S MUSIC - ULTIMATE</title>
+    
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%23fa2d48'/%3E%3C/svg%3E">
+    <link rel="shortcut icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%23fa2d48'/%3E%3C/svg%3E">
+    <link rel="apple-touch-icon" sizes="180x180" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Ccircle cx='90' cy='90' r='80' fill='%23fa2d48'/%3E%3C/svg%3E">
+    <!-- Google Fonts — Outfit + DM Sans + JetBrains Mono + Noto Serif SC + Noto Sans SC -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;600;700&family=Noto+Serif+SC:wght@600;700;900&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+    (function() {
+        setTimeout(function() {
+            var fontLink = document.querySelector('link[href*="fonts.googleapis.com"]');
+            if (fontLink) {
+                var sheet = fontLink.sheet;
+                if (!sheet || !sheet.cssRules || sheet.cssRules.length === 0) {
+                    fontLink.remove();
+                    console.warn('[fonts] Google Fonts 加载超时，已切换为系统字体');
+                }
+            }
+        }, 5000);
+    })();
+    </script>
+    <!-- LXGW WenKai 霞鹜文楷 — 高级中文楷体展示字体 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/style.css" />
+
+    <!-- 外部库 -->
+    <script src="./js/lib/jsmediatags.min.js" onerror="console.warn('[init] jsmediatags 加载失败，本地文件标签读取不可用')"></script>
+    <script src="./js/lib/localforage.min.js" onerror="console.warn('[init] localforage 加载失败，离线存储不可用')"></script>
+
+    <!-- 模块化 CSS（按依赖顺序加载） -->
+    <link rel="stylesheet" href="./css/variables.css">     <!-- [1] CSS变量 + 全局重置 + 背景系统（最先） -->
+    <link rel="stylesheet" href="./css/icons.css?v=20260429">          <!-- [2] 图标系统（强制刷新缓存） -->
+    <link rel="stylesheet" href="./css/desktop.css">       <!-- [3] 桌面端布局 + 播放器 + 歌词(PoloMusic) + 弹窗 -->
+    <link rel="stylesheet" href="./css/components.css">      <!-- [4] UI组件：按钮、表单、列表、下拉框 -->
+    <link rel="stylesheet" href="./css/mobile.css">         <!-- [5] 移动端完整样式（@media 900px，最后加载不覆盖桌面） -->
+
+    <!-- Electron 桌面端标题栏 -->
+    <style id="electron-titlebar-style">
+    body.electron-app { padding-top: 32px; }
+    body.electron-app #electron-titlebar { display: flex; }
+    body.electron-app.desktop-layout .left-panel { padding-top: 0; }
+    #electron-titlebar {
+        display: none;
+        position: fixed; top: 0; left: 0; right: 0; z-index: 99999;
+        height: 32px;
+        background: var(--bg-color);
+        -webkit-app-region: drag;
+        user-select: none;
+        align-items: center;
+        justify-content: flex-end;
+        padding: 0 4px;
+        border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    #electron-titlebar .tb-logo {
+        position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+        display: flex; align-items: center; gap: 7px;
+    }
+    #electron-titlebar .tb-logo .tb-dot {
+        width: 10px; height: 10px; border-radius: 50%;
+        background: var(--accent, #fa2d48);
+    }
+    #electron-titlebar .tb-logo .tb-name {
+        font-family: var(--font-display); font-size: var(--text-2xs); font-weight: var(--weight-semibold); color: rgba(255,255,255,0.55);
+        letter-spacing: 0.3px;
+    }
+    #electron-titlebar .tb-logo .tb-version {
+        font-family: var(--font-mono); font-size: var(--text-2xs); font-weight: var(--weight-medium); color: rgba(255,255,255,0.25);
+        letter-spacing: 0.5px;
+        margin-left: 2px;
+    }
+    #electron-titlebar .tb-btn {
+        -webkit-app-region: no-drag;
+        width: 40px; height: 28px;
+        border: none; background: none;
+        color: rgba(255,255,255,0.45);
+        cursor: pointer;
+        display: flex; align-items: center; justify-content: center;
+        border-radius: 6px;
+        transition: all 0.15s ease;
+    }
+    #electron-titlebar .tb-btn:hover { background: var(--accent); color: var(--text-primary); }
+    #electron-titlebar .tb-close:hover { background: #e0283c; color: var(--text-primary); }
+    #electron-titlebar .tb-btn svg { width: 12px; height: 12px; stroke: currentColor; stroke-width: 1.5; fill: none; }
+body[data-window-state="fullscreen"].electron-app { padding-top: 0 !important; }
+body[data-window-state="fullscreen"] #electron-titlebar { display: none !important; }
+    </style>
+
+</head>
+<body>
+<div id="electron-titlebar">
+    <div class="tb-logo">
+        <div class="tb-dot"></div>
+        <span class="tb-name">IANS MUSIC</span><span class="tb-version" id="app-version">v2.5.0</span>
+    </div>
+    <button class="tb-btn" id="txt-minimize" onclick="window.appRuntime?.minimize()" title="Minimize">
+        <svg viewBox="0 0 16 16" stroke="currentColor" fill="none" stroke-width="1.5"><line x1="2" y1="8" x2="14" y2="8"/></svg>
+    </button>
+    <button class="tb-btn" id="txt-maximize" onclick="window.appRuntime?.maximize()" title="Maximize">
+        <svg viewBox="0 0 16 16" stroke="currentColor" fill="none" stroke-width="1.5"><rect x="2" y="2" width="12" height="12" rx="1"/></svg>
+    </button>
+    <button class="tb-btn" id="txt-fullscreen" onclick="window.appRuntime?.fullscreen()" title="Fullscreen">
+        <svg viewBox="0 0 16 16" stroke="currentColor" fill="none" stroke-width="1.5"><polyline points="2,5 2,2 5,2"/><polyline points="14,11 14,14 11,14"/><polyline points="11,2 14,2 14,5"/><polyline points="5,14 2,14 2,11"/></svg>
+    </button>
+    <button class="tb-btn tb-close" id="txt-close-win" onclick="window.appRuntime?.close()" title="Close">
+        <svg viewBox="0 0 16 16" stroke="currentColor" fill="none" stroke-width="1.5"><line x1="3" y1="3" x2="13" y2="13"/><line x1="13" y1="3" x2="3" y2="13"/></svg>
+    </button>
+</div>
+<div class="ambient-container">
+    <div id="apple-music-bg" class="apple-music-bg"></div>
+    <div class="noise-overlay"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<button id="ai-translate-btn" class="top-btn ai-trans-btn-custom" onclick="translateLyrics()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 8l6 6M4 14l6-6M2 5h12M7 2h1M22 22l-5-10-5 10M14 18h6"/></svg>
+    <span id="ai-btn-text" style="margin-left: 6px;">翻译</span>
+</button>
+
+<button class="top-btn settings-btn" onclick="toggleSettings(true)">
+    <img src="./img/setting.svg" style="width: 24px; height: 24px;" alt="Settings" onerror="this.onerror=null;this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2224%22 height=%2224%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22white%22 stroke-width=%222%22%3E%3Ccircle cx=%2212%22 cy=%2212%22 r=%223%22/%3E%3Cpath d=%22M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z%22/%3E%3C/svg%3E'">
+</button>
+
+<button class="top-btn sleep-btn" onclick="cycleSleepTimer()" id="quick-sleep-btn">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+    <span id="quick-sleep-text" class="weight-bold text-size-xs" style="display:none;"></span>
+</button>
+
+<button class="top-btn lyrics-btn" onclick="openSearchModal()" title="Search / Change Lyrics">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path><line x1="8" y1="10" x2="16" y2="10"></line><line x1="8" y1="14" x2="12" y2="14"></line></svg>
+</button>
+
+<button class="top-btn playlist-btn" onclick="togglePlaylist(true)">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+</button>
+
+<button class="top-btn offline-btn" onclick="toggleOfflinePanel()" title="Offline Music">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+</button>
+
+<!-- 更多菜单按钮（手机端） -->
+<button class="mobile-more-btn" id="mobile-more-btn" onclick="toggleMobileMore(true); event.stopPropagation()">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>
+</button>
+
+<!-- 更多菜单抽屉 -->
+<div class="mobile-more-drawer" id="mobile-more-drawer" onclick="toggleMobileMore(false)">
+    <div class="mobile-more-sheet" id="mobile-more-sheet" onclick="event.stopPropagation()">
+        <div class="mobile-more-handle"></div>
+        <button class="more-item" onclick="IanMusic.toggleLyricAlign();toggleMobileMore(false)"><span class="more-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="21" y1="10" x2="7" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="21" y1="18" x2="7" y2="18"/></svg></span><span id="mob-more-align-text">歌词居中</span></button>
+        <button class="more-item" onclick="openSearchModal();toggleMobileMore(false)"><span class="more-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span><span id="txt-search-lyrics-mobile">歌词搜索</span></button>
+        <button class="more-item" onclick="translateLyrics();toggleMobileMore(false)"><span class="more-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 8l6 6M4 14l6-6M2 5h12M7 2h1M22 22l-5-10-5 10M14 18h6"/></svg></span><span id="mob-more-translate-text">翻译歌词</span></button>
+        <button class="more-item" onclick="toggleAIModal(true);toggleMobileMore(false)"><span class="more-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></span><span id="txt-song-insight-mobile">歌曲解构</span></button>
+        <button class="more-item" id="mob-song-info-btn" onclick="showSongInfo();toggleMobileMore(false)"><span class="more-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg></span><span id="txt-song-info-btn">歌曲信息</span></button>
+        <div class="more-divider"></div>
+        <button class="more-item" onclick="cycleSleepTimer();toggleMobileMore(false)"><span class="more-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></span><span id="mob-more-sleep-text">睡眠定时</span></button>
+        <button class="more-item" onclick="toggleShuffle();toggleMobileMore(false)"><span class="more-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg></span><span id="mob-more-shuffle-text">随机播放</span></button>
+        <button class="more-item" onclick="toggleRepeat();toggleMobileMore(false)"><span class="more-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg></span><span id="mob-more-repeat-text">循环模式</span></button>
+        <div class="more-divider"></div>
+        <button class="more-item" onclick="toggleSettings(true);toggleMobileMore(false)"><span class="more-icon"><img src="./img/setting.svg" style="width:22px;height:22px;" alt="Settings"></span><span id="txt-settings-mobile">设置</span></button>
+        <button class="more-item" onclick="togglePlaylistImportModal();toggleMobileMore(false)"><span class="more-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></span><span id="txt-import-playlist-mobile">导入歌单</span></button>
+    </div>
+</div>
+
+<div class="modal-overlay" id="move-modal" onclick="if(event.target===this) toggleMoveModal(false)">
+    <div class="settings-panel glass-card settings-panel--sm">
+        <div class="settings-header"><span id="txt-move">Move to...</span><span onclick="toggleMoveModal(false)" id="txt-cancel-btn">Cancel</span></div>
+        <div class="settings-body scroll-area--md" id="move-list"></div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="ai-modal" onclick="if(event.target===this) toggleAIModal(false)">
+    <div class="settings-panel glass-card">
+        <div class="settings-header"><span id="txt-ai-title-modal">Song Insight</span><span onclick="toggleAIModal(false)" id="txt-done-btn">Done</span></div>
+        <div class="settings-body"><div id="ai-content" class="ai-response-text" style="min-height:100px;"></div><div class="gemini-badge" id="txt-powered-by-badge">Powered by DeepSeek AI</div></div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="song-info-modal" onclick="if(event.target===this) toggleSongInfoModal(false)">
+    <div class="settings-panel glass-card settings-panel--md">
+        <div class="settings-header">
+            <span id="txt-song-info-title">歌曲信息</span>
+            <span onclick="toggleSongInfoModal(false)" id="txt-song-info-done">Done</span>
+        </div>
+        <div class="settings-body" id="song-info-content" style="line-height:1.8;"></div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="net-search-modal" onclick="if(event.target===this) toggleNetSearchModal(false)">
+    <div class="settings-panel glass-card">
+        <div class="settings-header"><span id="txt-net-search-title-modal">Web Search</span><span onclick="toggleNetSearchModal(false)" id="txt-cancel-btn">Cancel</span></div>
+        <div class="settings-body">
+            <div class="flex-row">
+                <div class="custom-select-container" id="source-select">
+                    <div class="custom-select-trigger" onclick="toggleSourceMenu()"><span id="current-source-text">全部</span></div>
+                    <div class="custom-options">
+                        <div class="custom-option selected" onclick="setSource('all','全部')"><span>全部</span></div>
+                        <div class="custom-option" onclick="setSource('kugou','酷狗')"><span>酷狗</span></div>
+                        <div class="custom-option" onclick="setSource('netease','网易云')"><span>网易云</span></div>
+                        <div class="custom-option" onclick="setSource('kuwo','酷我')"><span>酷我</span></div>
+                        <div class="custom-option" onclick="setSource('tencent','QQ音乐')"><span>QQ音乐</span></div>
+                        <div class="custom-option" onclick="setSource('migu','咪咕')"><span>咪咕</span></div>
+                        <div class="custom-option" onclick="setSource('bilibili','哔哩哔哩')"><span>哔哩哔哩</span></div>
+                    </div>
+                </div>
+                <input type="text" id="net-search-input" placeholder="Song, Artist" class="search-input" data-i18n-placeholder="netSearchPlaceholder">
+                <button class="liquid-btn primary liquid-btn--compact" id="net-search-go-btn" onclick="performNetSearch()">Go</button>
+            </div>
+            <div id="txt-net-search-desc" class="search-loading-hint">聚合搜索全部平台，自动过滤 Live 版，自动双 API 重试。</div>
+            <div class="search-history-section" id="search-history-section">
+                <div class="search-history-header"><span>Recent</span><span class="search-history-clear" onclick="IanMusic.clearSearchHistory()">Clear</span></div>
+                <div class="search-history-tags" id="search-history-tags"></div>
+            </div>
+            <div id="net-search-results" class="scroll-area--sm"></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="playlist-import-modal" onclick="if(event.target===this) togglePlaylistImportModal(false)">
+    <div class="settings-panel glass-card settings-panel--wide">
+        <div class="settings-header"><span id="txt-import-playlist-title">导入歌单</span><span onclick="togglePlaylistImportModal(false)" id="txt-cancel-btn">取消</span></div>
+        <div class="settings-body">
+            <input type="text" id="playlist-link-input" placeholder="粘贴 QQ音乐 / 网易云歌单链接..." class="search-input search-input--full" data-i18n-placeholder="playlistLinkPlaceholder">
+            <div id="txt-playlist-link-hint" class="settings-hint" style="margin-bottom:14px;">支持 QQ音乐、网易云歌单链接，以及纯 ID</div>
+            <button class="liquid-btn primary liquid-btn--full" id="txt-load-playlist-btn" onclick="window.IanMusic.performPlaylistFromLink()">加载歌单</button>
+            <div id="playlist-import-results" style="margin-top:16px;max-height:280px;overflow-y:auto;"></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="cover-modal" onclick="if(event.target===this) toggleCoverModal(false)">
+    <div class="settings-panel glass-card">
+        <div class="settings-header"><span id="txt-search-cover-title">搜索在线封面</span><span onclick="toggleCoverModal(false)" id="txt-cancel-btn">取消</span></div>
+        <div class="settings-body">
+            <div class="flex-row">
+                <input type="text" id="search-cover-input" placeholder="歌曲名 歌手名" class="search-input" data-i18n-placeholder="netSearchPlaceholder">
+                <button class="liquid-btn primary liquid-btn--compact" id="txt-cover-search-btn" onclick="performCoverSearch()">搜索</button>
+            </div>
+            <div id="cover-results" class="cover-grid"></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="settings-modal" onclick="if(event.target===this) toggleSettings(false)">
+    <div class="settings-panel glass-card">
+        <div class="settings-header"><span id="txt-settings">Settings</span><span onclick="toggleSettings(false)" id="txt-done-btn">Done</span></div>
+        <div class="settings-body">
+            <div class="settings-group">
+                <div class="settings-group-title" id="txt-ai-api-group">AI API</div>
+                <div class="settings-field-label" id="txt-api-key">API Key</div>
+                <input type="password" id="api-key-input" class="settings-input" placeholder="sk-..." onchange="saveApiKey(this.value)">
+                <div class="settings-field-label" style="margin-top:14px;" id="txt-base-url">Base URL</div>
+                <input type="text" id="api-url-input" class="settings-input" placeholder="https://..." onchange="saveApiUrl(this.value)">
+                <div class="settings-field-label" style="margin-top:14px;" id="txt-model">Model</div>
+                <input type="text" id="api-model-input" class="settings-input" placeholder="deepseek-ai/DeepSeek-V3" onchange="saveApiModel(this.value)">
+                <div class="settings-hint" id="txt-proxy-hint">Recommended for China: Use SiliconFlow (api.siliconflow.cn). Get Key at cloud.siliconflow.cn.</div>
+            </div>
+            <div class="settings-group">
+                <div class="settings-group-title" id="txt-music-api-group">音乐 API</div>
+                <div class="settings-field-label" id="txt-local-meting">本地 Meting API 地址</div>
+                <input type="text" id="local-meting-input" class="settings-input" placeholder="http://localhost:3300" onchange="saveLocalMetingApi(this.value)">
+                <div class="settings-hint" id="txt-local-meting-hint">自建 Meting-API 服务地址（Cookie 功能必须使用自建API）</div>
+                <div class="settings-guide-box">
+                    <div class="settings-guide-title" id="txt-why-need-cookie">为什么需要填写 Cookie？</div>
+                    <div class="settings-guide-text" id="txt-cookie-explanation">音乐平台出于版权保护，限制了未登录用户的音质和歌曲范围。通过填写平台的登录 Cookie，可以在合法范围内获取更高音质的歌曲和完整曲库内容。</div>
+                </div>
+                <div class="settings-guide-box settings-guide-box-vip">
+                    <div class="settings-guide-title" id="txt-vip-prerequisite-title">⚠️ VIP 歌曲收听前提（必读）</div>
+                    <div class="settings-guide-text" id="txt-vip-prerequisite-text">若需收听 VIP 歌曲，<strong>必须同时满足以下两个条件</strong>，缺一不可：<br>① 在下方正确填写<strong>有效的平台 Cookie</strong>（扫码登录或手动粘贴）<br>② 该 Cookie 所关联的账号已开通对应平台的 <strong>VIP 会员权限</strong><br><br>Cookie 无效 → 无法播放；账号非 VIP → VIP 歌曲仍不可用。请在相应音乐平台官网开通会员后，使用该会员账号登录。</div>
+                </div>
+                <hr class="settings-divider">
+                <div class="settings-group-title" style="margin-bottom:12px;">扫码登录</div>
+                <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                    <button class="qr-login-btn" onclick="openQRLogin('netease')">
+                        <span class="qr-login-icon" style="background:linear-gradient(135deg,#e60026,#c20c0c);">易</span>
+                        <span class="qr-login-label">网易云</span>
+                    </button>
+                    <button class="qr-login-btn" onclick="openQRLogin('qqmusic')">
+                        <span class="qr-login-icon" style="background:linear-gradient(135deg,#31c27c,#22a265);">Q</span>
+                        <span class="qr-login-label">QQ音乐</span>
+                    </button>
+                    <button class="qr-login-btn" onclick="openQRLogin('kugou')">
+                        <span class="qr-login-icon" style="background:linear-gradient(135deg,#2ca2f9,#1a8cd8);">酷</span>
+                        <span class="qr-login-label">酷狗</span>
+                    </button>
+                </div>
+                <div class="settings-hint" id="txt-qr-scan-guide" style="margin-top:8px;">操作指引：点击上方按钮 → 打开手机 APP 扫码 → Cookie 自动填入下方输入框并生效</div>
+                <hr class="settings-divider">
+                <div class="settings-field-label" id="txt-netease-cookie">网易云音乐 Cookie</div>
+                <input type="password" id="netease-cookie-input" class="settings-input" placeholder="扫码登录自动填入，或手动粘贴" onchange="saveNeteaseCookie(this.value)" onblur="saveNeteaseCookie(this.value)">
+                <div class="settings-hint-warn" id="txt-netease-vip-hint">⚠️ 收听网易云音乐 VIP 歌曲必须：① 填写有效的 Cookie ② 该账号为 <strong>网易云黑胶 VIP</strong>。Cookie 仅在使用自建 Meting-API 时生效。</div>
+                <div class="settings-field-label" style="margin-top:14px;" id="txt-qqmusic-cookie">QQ音乐 Cookie</div>
+                <input type="password" id="qqmusic-cookie-input" class="settings-input" placeholder="扫码登录自动填入，或手动粘贴" onchange="saveQqmusicCookie(this.value)" onblur="saveQqmusicCookie(this.value)">
+                <div class="settings-hint-warn" id="txt-qq-vip-hint">⚠️ 收听 QQ 音乐 VIP 歌曲必须：① 填写有效的 Cookie ② 该账号为 <strong>QQ 音乐绿钻/豪华绿钻 VIP</strong>。Cookie 仅在使用自建 Meting-API 时生效。</div>
+                <div class="settings-field-label" style="margin-top:14px;" id="txt-kugou-cookie">酷狗音乐 Cookie</div>
+                <input type="password" id="kugou-cookie-input" class="settings-input" placeholder="扫码登录自动填入，或手动粘贴" onchange="saveKugouCookie(this.value)" onblur="saveKugouCookie(this.value)">
+                <div class="settings-hint" id="txt-cookie-only-api">Cookie 仅在使用自建 Meting-API 时生效</div>
+            </div>
+            <div class="settings-group">
+                <div class="settings-row">
+                    <span class="settings-row-label" id="txt-lang">Language</span>
+                    <div class="segment-control">
+                        <div class="segment-opt active" onclick="setLanguage('en')" id="lang-en">EN</div>
+                        <div class="segment-opt" onclick="setLanguage('zh')" id="lang-zh">中</div>
+                    </div>
+                </div>
+            </div>
+            <div class="settings-group">
+                <div class="settings-group-title" id="txt-theme-display-group">主题与显示</div>
+                <div class="settings-row">
+                    <span class="settings-row-label" id="txt-theme-color">Theme Color</span>
+                    <div class="color-options">
+                        <div class="color-circle" id="auto-color-btn" style="background:linear-gradient(135deg,#444,#888);border:2px solid rgba(255,255,255,0.3);" onclick="setAutoColorMode()" title="Auto"></div>
+                        <div class="color-circle active" style="background:var(--accent)" onclick="setAccent('#fa2d48',this)"></div>
+                        <div class="color-circle" style="background:#0a84ff" onclick="setAccent('#0a84ff',this)"></div>
+                        <div class="color-circle" style="background:conic-gradient(red,yellow,lime,blue,magenta,red)" onclick="toggleCustomPicker()"></div>
+                    </div>
+                </div>
+                <div style="margin-top:10px;">
+                    <div class="settings-field-label" id="txt-ai-theme-gen">AI Theme Generator</div>
+                    <div class="flex-center">
+                        <input type="text" id="ai-theme-input" class="settings-input" style="flex:1;" placeholder="e.g. Rainy Jazz, Summer Beach" data-i18n-placeholder="enterThemeDesc">
+                        <button class="liquid-btn primary liquid-btn--compact" id="txt-ai-go-btn" onclick="generateAITheme()">Go</button>
+                    </div>
+                </div>
+                <div class="custom-picker-popup" id="custom-picker">
+    <div class="cp-tabs">
+        <div class="cp-tab active" data-tab="rgb" onclick="switchColorTab('rgb')">RGB</div>
+        <div class="cp-tab" data-tab="hsb" onclick="switchColorTab('hsb')">HSB</div>
+        <div class="cp-tab" data-tab="hex" onclick="switchColorTab('hex')">HEX</div>
+    </div>
+    <div class="cp-tab-panel active" id="cp-panel-rgb">
+        <div class="cp-slider-row"><label>R</label><input type="range" min="0" max="255" value="250" id="cp-r" oninput="onRGBChange()"><span id="cp-r-val">250</span></div>
+        <div class="cp-slider-row"><label>G</label><input type="range" min="0" max="255" value="45" id="cp-g" oninput="onRGBChange()"><span id="cp-g-val">45</span></div>
+        <div class="cp-slider-row"><label>B</label><input type="range" min="0" max="255" value="72" id="cp-b" oninput="onRGBChange()"><span id="cp-b-val">72</span></div>
+    </div>
+    <div class="cp-tab-panel" id="cp-panel-hsb">
+        <div class="cp-slider-row"><label>H</label><input type="range" min="0" max="360" value="0" id="cp-h" oninput="onHSBChange()"><span id="cp-h-val">0</span></div>
+        <div class="cp-slider-row"><label>S</label><input type="range" min="0" max="100" value="82" id="cp-s" oninput="onHSBChange()"><span id="cp-s-val">82</span></div>
+        <div class="cp-slider-row"><label>B</label><input type="range" min="0" max="100" value="98" id="cp-br" oninput="onHSBChange()"><span id="cp-br-val">98</span></div>
+    </div>
+    <div class="cp-tab-panel" id="cp-panel-hex">
+        <div class="cp-hex-row">
+            <div class="cp-preview-swatch" id="cp-preview-swatch"></div>
+            <input type="text" class="cp-hex-input" id="cp-hex-input" value="#fa2d48" maxlength="7" oninput="onColorHexInput(this.value)">
+        </div>
+        <div class="cp-preset-grid" id="cp-preset-grid"></div>
+    </div>
+    <div class="cp-history-bar" id="cp-history-bar"></div>
+    <div class="cp-scheme-section">
+        <div class="cp-scheme-header"><span>Saved Schemes</span><button class="cp-scheme-save-btn" onclick="saveColorScheme()">+ Save</button></div>
+        <div class="cp-scheme-list" id="cp-scheme-list"></div>
+    </div>
+</div>
+                <hr class="settings-divider">
+                <div class="settings-group-title" id="txt-audio-quality">Audio Quality</div>
+                <div class="segment-control" id="quality-segment">
+                    <div class="segment-opt" onclick="setQuality('sq')" id="q-sq">SQ 无损</div>
+                    <div class="segment-opt" onclick="setQuality('hq')" id="q-hq">HQ 高品质</div>
+                    <div class="segment-opt" onclick="setQuality('aac')" id="q-aac">AAC</div>
+                    <div class="segment-opt active" onclick="setQuality('std')" id="q-std">标准</div>
+                </div>
+                <div class="settings-row">
+                    <span class="settings-row-label" id="txt-download-path-label">下载路径</span>
+                    <span class="settings-row-value" id="download-path-display" style="font-size:11px;opacity:0.6;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>
+                </div>
+                <div style="display:flex;gap:8px;margin-top:4px;">
+                    <button class="settings-action-btn primary" onclick="changeDownloadPath()" id="txt-change-path-btn">更改路径</button>
+                    <button class="settings-action-btn" onclick="resetDownloadPath()" id="txt-reset-path-btn">重置</button>
+                </div>
+                <hr class="settings-divider">
+                <div class="settings-row">
+                    <span class="settings-row-label" id="txt-blur-label">Blur</span>
+                    <div class="segment-control">
+                        <div class="segment-opt" onclick="setBlur('80px')" id="blur-low">Low</div>
+                        <div class="segment-opt active" onclick="setBlur('120px')" id="blur-high">High</div>
+                    </div>
+                </div>
+                <div class="settings-row">
+                    <span class="settings-row-label" id="txt-lyrics-size">Lyrics Size</span>
+                    <div class="segment-control">
+                        <div class="segment-opt" onclick="setSize('small')" id="size-s">S</div>
+                        <div class="segment-opt active" onclick="setSize('medium')" id="size-m">M</div>
+                        <div class="segment-opt" onclick="setSize('large')" id="size-l">L</div>
+                    </div>
+                </div>
+                <div class="settings-row">
+                    <span class="settings-row-label" id="txt-crossfade-label">Crossfade</span>
+                    <div class="segment-control">
+                        <div class="segment-opt" onclick="toggleCrossfade()" id="cf-off">Off</div>
+                        <div class="segment-opt" onclick="setCrossfadeDur(2)" id="cf-2">2s</div>
+                        <div class="segment-opt" onclick="setCrossfadeDur(3)" id="cf-3">3s</div>
+                        <div class="segment-opt" onclick="setCrossfadeDur(5)" id="cf-5">5s</div>
+                        <div class="segment-opt" onclick="setCrossfadeDur(8)" id="cf-8">8s</div>
+                    </div>
+                </div>
+            </div>
+            <div class="settings-group">
+                <div class="settings-group-title" id="txt-sleep-timer-group">睡眠定时</div>
+                <div class="settings-row">
+                    <span><span id="txt-sleep-timer">Sleep Timer</span><span id="sleep-countdown" style="color:var(--accent);font-weight:700;margin-left:5px;"></span></span>
+                    <div class="segment-control">
+                        <div class="segment-opt active" onclick="setSleep(0)" id="sleep-off">Off</div>
+                        <div class="segment-opt" onclick="setSleep(15)">15m</div>
+                        <div class="segment-opt" onclick="setSleep(30)">30m</div>
+                    </div>
+                </div>
+                <div class="settings-row">
+                    <span class="settings-row-label" id="txt-custom-min">Custom (min)</span>
+                    <div class="flex-center">
+                        <input type="number" id="custom-sleep-val" class="custom-sleep-input" value="45">
+                        <button class="liquid-btn primary liquid-btn--compact" id="txt-sleep-set-btn" style="padding:6px 14px;font-size:var(--text-xs);" onclick="setCustomSleep()">Set</button>
+                    </div>
+                </div>
+            </div>
+            <div class="settings-group">
+                <div class="flex-row">
+                    <button class="liquid-btn" id="txt-export-btn" onclick="exportData()">Export</button>
+                    <div style="position:relative;flex:1;">
+                        <button class="liquid-btn liquid-btn--full" id="txt-import-btn">Import</button>
+                        <input type="file" style="position:absolute;inset:0;opacity:0;cursor:pointer;" onchange="importData(this)">
+                    </div>
+                </div>
+                <button class="liquid-btn liquid-btn--full mt-14" id="txt-reset-lib-btn" style="color:var(--color-error);background:rgba(255,69,58,0.10);" onclick="resetLib()">Reset Library</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="qr-login-modal" onclick="if(event.target===this) closeQRLogin()">
+    <div class="qr-login-dialog glass-card">
+        <div class="qr-login-header">
+            <span id="qr-login-title" class="qr-login-title-text">扫码登录</span>
+            <span onclick="closeQRLogin()" id="txt-qr-login-close" style="color:var(--accent);cursor:pointer;font-family:var(--font-body);font-size:var(--text-sm);font-weight:var(--weight-medium);">关闭</span>
+        </div>
+        <div class="qr-login-body">
+            <div class="qr-code-wrapper" id="qr-code-wrapper">
+                <div class="qr-code-spinner" id="qr-code-spinner">
+                    <div class="spinner"></div>
+                </div>
+                <img id="qr-code-img" src="" alt="QR Code" style="display:none;width:200px;height:200px;border-radius:12px;">
+                <div id="qr-code-expired" style="display:none;position:absolute;inset:0;background:rgba(0,0,0,0.75);border-radius:12px;align-items:center;justify-content:center;flex-direction:column;gap:8px;">
+                    <span id="txt-qr-expired" style="font-size:var(--text-lg);opacity:0.8;">二维码已过期</span>
+                    <button id="txt-qr-refresh" class="liquid-btn primary" style="padding:8px 20px;font-size:var(--text-sm);" onclick="refreshQRLogin()">点击刷新</button>
+                </div>
+            </div>
+            <div id="qr-countdown">
+                <div class="qr-countdown-track"><div id="qr-countdown-bar" class="qr-countdown-bar"></div></div>
+                <span id="qr-countdown-text" class="qr-countdown-label"></span>
+            </div>
+            <div id="txt-qr-fetching" class="qr-login-status">正在获取二维码...</div>
+            <div id="qr-status-panel" class="qr-status-panel" style="display:none;">
+                <span id="qr-status-icon" class="qr-status-icon"></span>
+                <span id="qr-status-text" class="qr-status-text"></span>
+            </div>
+            <div id="qr-login-platform-hint" class="qr-login-platform-hint"></div>
+            <div id="qr-login-footer" class="qr-login-footer"></div>
+            <div id="qr-manual-cookie" class="qr-manual-cookie">
+                <div class="qr-manual-cookie-toggle" id="qr-manual-toggle" onclick="toggleManualCookie()">
+                    <span id="txt-qr-no-cookie">没有 Cookie？手动粘贴</span>
+                    <svg class="qr-manual-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                </div>
+                <div class="qr-manual-cookie-body" id="qr-manual-body" style="display:none;">
+                    <textarea id="qr-manual-textarea" class="qr-manual-textarea" placeholder="从浏览器 DevTools → Application → Cookies 复制完整 Cookie 字符串粘贴到这里..." data-i18n-placeholder="cookiePlaceholder"></textarea>
+                    <button class="qr-manual-submit" id="txt-qr-confirm-paste" onclick="submitManualCookie()">确认粘贴</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="search-modal" onclick="if(event.target===this) toggleSearchModal(false)">
+    <div class="settings-panel glass-card">
+        <div class="settings-header"><span id="txt-lyrics-title">更换歌词</span><span onclick="toggleSearchModal(false)" id="txt-cancel-btn">取消</span></div>
+        <div class="settings-body">
+            <div class="flex-row">
+                <div class="custom-select-container" id="lyric-source-select" style="width:110px;">
+                    <div class="custom-select-trigger" onclick="document.getElementById('lyric-source-select').classList.toggle('open')"><span id="lyric-source-text">QQ音乐</span></div>
+                    <div class="custom-options">
+                        <div class="custom-option selected" onclick="setLyricSource('tencent','QQ音乐',this)"><span>QQ音乐</span></div>
+                        <div class="custom-option" onclick="setLyricSource('kugou','酷狗',this)"><span>酷狗</span></div>
+                        <div class="custom-option" onclick="setLyricSource('netease','网易云',this)"><span>网易云</span></div>
+                        <div class="custom-option" onclick="setLyricSource('lrclib','LRCLIB',this)"><span>LRCLIB</span></div>
+                    </div>
+                </div>
+                <input type="text" id="search-track" placeholder="歌曲名 歌手名" onkeydown="if(event.key==='Enter')performLyricSearch()" class="search-input" data-i18n-placeholder="netSearchPlaceholder">
+                <button class="liquid-btn primary liquid-btn--compact" id="lyric-search-go-btn" onclick="performLyricSearch()">搜索</button>
+            </div>
+            <button class="liquid-btn liquid-btn--full" id="txt-import-local-lrc-btn" style="margin-bottom:15px;" onclick="document.getElementById('lrc-up').click()"><span class="icon icon-file" style="margin-right:6px;"></span>导入本地 .lrc / .txt 歌词文件</button>
+            <input type="file" id="lrc-up" accept=".lrc,.txt" style="display:none" onchange="importCustomLyric(this)">
+            <div id="search-results" style="max-height:300px;overflow-y:auto;padding-right:5px;"></div>
+        </div>
+    </div>
+</div>
+
+<!-- ====== 主布局 ====== -->
+<div class="main-layout">
+    <div class="left-panel">
+        <!-- 封面 -->
+        <div class="album-art-container">
+            <div class="album-art paused" id="art">
+                <div class="album-art-actions" onclick="event.stopPropagation()"><div class="album-action-btn" id="txt-search-online-img-btn" onclick="openCoverSearchModal()"><span class="icon icon-globe" style="margin-right:4px;"></span>网络搜图</div><div class="album-action-btn" id="txt-local-upload-btn" onclick="document.getElementById('cover-up').click()"><span class="icon icon-file" style="margin-right:4px;"></span>本地上传</div></div>
+            </div>
+            <input type="file" id="cover-up" accept="image/*" style="display:none" onchange="importCustomCover(this)">
+        </div>
+
+        <!-- 歌曲信息 -->
+        <div class="track-info">
+            <div class="track-info-left">
+                <div class="track-title-row">
+                    <div class="track-title" id="title">IAN'S MUSIC</div>
+                </div>
+                <div class="track-artist" id="artist"></div>
+            </div>
+            <div class="track-info-actions">
+                <button class="like-btn" id="like-btn" onclick="toggleLike()" title="Like"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></button>
+                <button class="more-btn-desktop" id="txt-more-btn" onclick="toggleMobileMore(true); event.stopPropagation()" title="More">⋯</button>
+                <button class="download-btn" id="download-btn" onclick="window.IanMusic.showDownloadQualityPicker()" title="Download" style="position:relative;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    <div id="download-progress" style="display:none;position:absolute;bottom:0;left:0;height:2px;background:var(--accent);width:0%;border-radius:1px;"></div>
+                </button>
+            </div>
+        </div>
+
+        <!-- 进度条 -->
+        <div class="progress-section">
+            <div class="seek-row">
+                <div class="seek-wrap">
+                    <div class="seek-track"><div class="seek-fill" id="seek-fill"></div></div>
+                    <input type="range" id="seek" min="0" max="100" value="0" class="seek-input">
+                </div>
+            </div>
+            <div class="progress-times-row">
+                <span class="progress-time" id="curr">0:00</span>
+                <span class="progress-time right" id="dur">0:00</span>
+            </div>
+        </div>
+
+        <!-- 控制按钮 -->
+        <div class="controls">
+            <button class="btn btn-sm" onclick="toggleShuffle()" id="btn-shuffle"><svg class="icon" viewBox="0 0 1024 1024" width="18" height="18" fill="currentColor"><path d="M914.2 705L796.4 596.8c-8.7-8-22.7-1.8-22.7 10V688c-69.5-1.8-134-39.7-169.3-99.8l-45.1-77 47-80.2c34.9-59.6 98.6-97.4 167.4-99.8v60.1c0 11.8 14 17.9 22.7 10l117.8-108.1c5.8-5.4 5.8-14.6 0-19.9L796.4 165c-8.7-8-22.7-1.8-22.7 10v76H758c-4.7 0-9.3 0.8-13.5 2.3-36.5 4.7-72 16.6-104.1 35-42.6 24.4-78.3 59.8-103.1 102.2L513 432l-24.3-41.5c-24.8-42.4-60.5-77.7-103.1-102.2C343 263.9 294.5 251 245.3 251H105c-22.1 0-40 17.9-40 40s17.9 40 40 40h140.3c71.4 0 138.3 38.3 174.4 99.9l47 80.2-45.1 77c-36.2 61.7-103 99.9-174.4 99.9H105c-22.1 0-40 17.9-40 40s17.9 40 40 40l142 0.1h0.2c49.1 0 97.6-12.9 140.2-37.3 42.7-24.4 78.3-59.8 103.2-102.2l22.4-38.3 22.4 38.3c24.8 42.4 60.5 77.8 103.2 102.2 33.1 18.9 69.6 30.9 107.3 35.4 3.8 1.2 7.8 1.8 11.9 1.8l15.9 0.1v55c0 11.8 14 17.9 22.7 10L914.2 725c5.9-5.5 5.9-14.7 0-20z"/></svg></button>
+            <button class="btn btn-lg" onclick="prev()"><img src="./img/apple music icon_08.svg" width="24" height="24"></button>
+            <button class="btn play-btn" onclick="togglePlay()" id="play-btn"><img src="./img/apple music icon_06.svg" width="30" height="30"></button>
+            <button class="btn btn-lg" onclick="next()"><img src="./img/apple music icon_09.svg" width="24" height="24"></button>
+            <button class="btn btn-sm" onclick="toggleRepeat()" id="btn-repeat"><svg class="icon" viewBox="0 0 1024 1024" width="18" height="18" fill="currentColor"><path d="M361.5 727.8c-119.1 0-215.9-96.9-215.9-215.9 0-119.1 96.9-215.9 215.9-215.9 2.3 0 4.6-0.2 6.8-0.6v58.3c0 12.3 14 19.4 23.9 12.1l132.6-97.6c8.1-6 8.1-18.2 0-24.2l-132.6-97.6c-9.9-7.3-23.9-0.2-23.9 12.1v58.1c-2.2-0.4-4.5-0.6-6.8-0.6-39.8 0-78.5 7.9-115 23.4-35.2 15-66.8 36.3-94 63.5s-48.6 58.8-63.5 94c-15.5 36.5-23.4 75.2-23.4 115s7.9 78.5 23.4 115c15 35.2 36.3 66.8 63.5 94s58.8 48.6 94 63.5c36.5 15.5 75.2 23.4 115 23.4 22.1 0 40-17.9 40-40s-17.9-40-40-40zM938.2 396.9c-15-35.2-36.3-66.8-63.5-94s-58.8-48.6-94-63.5c-36.5-15.5-75.2-23.4-115-23.4-22.1 0-40 17.9-40 40s17.9 40 40 40c119.1 0 215.9 96.9 215.9 215.9 0 119.1-96.9 215.9-215.9 215.9-4.1 0-8.1 0.6-11.8 1.8v-60.8c0-12.3-14-19.4-23.9-12.1l-132.6 97.6c-8.1 6-8.1 18.2 0 24.2L629.9 876c9.9 7.3 23.9 0.2 23.9-12.1V806c3.7 1.2 7.7 1.8 11.8 1.8 39.8 0 78.5-7.9 115-23.4 35.2-15 66.8-36.3 94-63.5s48.6-58.8 63.5-94c15.5-36.5 23.4-75.2 23.4-115s-7.8-78.5-23.3-115z"/><path d="M512.8 660.6c22.1-0.1 39.9-18.1 39.8-40.2l-1.2-214.1c-0.1-22-18-39.8-40-39.8h-0.2c-22.1 0.1-39.9 18.1-39.8 40.2l1.2 214.1c0.1 22 18 39.8 40 39.8h0.2z"/></svg></button>
+        </div>
+
+        <!-- 音量 -->
+        <div class="volume-section">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="vol-icon" id="txt-mute-btn" onclick="toggleMute()" title="Mute" style="cursor:pointer;"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+            <div class="vol-wrap">
+                <div class="vol-track"><div class="vol-fill" id="vol-fill"></div></div>
+                <input type="range" id="vol" min="0" max="100" value="80" class="vol-input">
+            </div>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="vol-icon" id="txt-volume-btn" onclick="toggleMute()" title="Volume" style="cursor:pointer;"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+        </div>
+    </div>
+
+    <!-- 桌面端歌词（右侧） -->
+    <div class="right-panel">
+        <div id="desktop-lyrics-box"></div>
+    </div>
+
+    <!-- 离线音乐面板 -->
+    <div class="offline-overlay" id="offline-overlay" style="display:none;" onclick="toggleOfflinePanel()"></div>
+    <div class="offline-panel" id="offline-panel" style="display:none;">
+        <div class="offline-panel-header">
+            <span id="txt-offline-title">Offline Music</span>
+            <span onclick="toggleOfflinePanel()" style="cursor:pointer;opacity:0.6;">Close</span>
+        </div>
+        <div class="offline-list" id="offline-list"></div>
+        <div class="offline-storage-info" id="offline-storage-info"></div>
+    </div>
+
+    <!-- 移动端全屏视图 -->
+    <div class="mobile-player-view" id="mobile-player-view">
+        <div class="mv-top-row">
+            <div class="mv-art-wrap"><img class="mv-art" id="mv-art" alt=""></div>
+            <div class="mv-info">
+                <div class="mv-title" id="mv-title"></div>
+                <div class="mv-artist" id="mv-artist"></div>
+            </div>
+            <div class="mv-top-actions">
+                <button class="mv-icon-btn like-btn" onclick="toggleLike()" title="收藏">♡</button>
+                <button class="mv-icon-btn more-btn" onclick="toggleMobileMore(true); event.stopPropagation()">⋮</button>
+            </div>
+        </div>
+        <div id="mv-body">
+            <!-- 无歌词模式 = 桌面端 left-panel 复刻 -->
+            <div id="mv-no-lyric">
+                <!-- 封面 -->
+                <div class="no-lyric-art-container">
+                    <div class="no-lyric-art" id="no-lyric-art"></div>
+                </div>
+                <!-- 歌曲信息：标题 + 收藏/更多 -->
+                <div class="no-lyric-info">
+                    <div class="no-lyric-info-left">
+                        <div class="no-lyric-title" id="no-lyric-title"></div>
+                        <div class="no-lyric-artist" id="no-lyric-artist"></div>
+                    </div>
+                    <div class="no-lyric-actions">
+                        <button class="like-btn" onclick="toggleLike()">♡</button>
+                        <button class="more-btn-desktop text-size-xl" style="color:rgba(255,255,255,0.5);background:none;border:none;padding:0;width:30px;height:30px;display:flex;align-items:center;justify-content:center;" onclick="toggleMobileMore(true);event.stopPropagation()">⋯</button>
+                    </div>
+                </div>
+                <!-- 进度条（复用已有的 mv-progress-wrap）由 CSS 控制位置 -->
+                <!-- 播放控制（复用已有的 mv-ctrl-row）由 CSS 控制位置 -->
+                <!-- 音量条（复用已有的 mv-vol-wrap）由 CSS 控制位置 -->
+            </div>
+            <!-- 歌词模式 -->
+            <div id="mv-lyric-rows"></div>
+        </div>
+        <div class="mv-bottom-left"><button class="mv-trans-btn" id="txt-mv-translate-btn" onclick="translateLyrics()">译</button></div>
+        <div class="mv-bottom-right"><button class="mv-trans-btn" id="txt-mv-word-btn" onclick="toggleLyricStyle()">词</button></div>
+        <div class="mv-progress-wrap"><span class="mv-time" id="mv-curr">0:00</span><div class="mv-seek-row"><div class="mv-seek-bg" id="mv-seek-bg"><div class="mv-seek-fill" id="mv-seek-fill"></div><div class="mv-seek-thumb" id="mv-seek-thumb"></div></div></div><span class="mv-time" id="mv-dur">0:00</span></div>
+        <div class="mv-ctrl-row">
+            <button class="mv-ctrl-btn" id="mv-shuffle-btn" onclick="toggleShuffle()"><svg viewBox="0 0 1024 1024" width="18" height="18" fill="currentColor"><path d="M914.2 705L796.4 596.8c-8.7-8-22.7-1.8-22.7 10V688c-69.5-1.8-134-39.7-169.3-99.8l-45.1-77 47-80.2c34.9-59.6 98.6-97.4 167.4-99.8v60.1c0 11.8 14 17.9 22.7 10l117.8-108.1c5.8-5.4 5.8-14.6 0-19.9L796.4 165c-8.7-8-22.7-1.8-22.7 10v76H758c-4.7 0-9.3 0.8-13.5 2.3-36.5 4.7-72 16.6-104.1 35-42.6 24.4-78.3 59.8-103.1 102.2L513 432l-24.3-41.5c-24.8-42.4-60.5-77.7-103.1-102.2C343 263.9 294.5 251 245.3 251H105c-22.1 0-40 17.9-40 40s17.9 40 40 40h140.3c71.4 0 138.3 38.3 174.4 99.9l47 80.2-45.1 77c-36.2 61.7-103 99.9-174.4 99.9H105c-22.1 0-40 17.9-40 40s17.9 40 40 40l142 0.1h0.2c49.1 0 97.6-12.9 140.2-37.3 42.7-24.4 78.3-59.8 103.2-102.2l22.4-38.3 22.4 38.3c24.8 42.4 60.5 77.8 103.2 102.2 33.1 18.9 69.6 30.9 107.3 35.4 3.8 1.2 7.8 1.8 11.9 1.8l15.9 0.1v55c0 11.8 14 17.9 22.7 10L914.2 725c5.9-5.5 5.9-14.7 0-20z"/></svg></button>
+            <button class="mv-ctrl-btn" onclick="prev()"><img src="./img/apple music icon_08.svg" width="24" height="24"></button>
+            <button class="mv-play-btn" onclick="togglePlay()" id="mv-play-btn"><img src="./img/apple music icon_06.svg" width="32" height="32"></button>
+            <button class="mv-ctrl-btn" onclick="next()"><img src="./img/apple music icon_09.svg" width="24" height="24"></button>
+            <button class="mv-ctrl-btn" id="mv-repeat-btn" onclick="toggleRepeat()"><svg class="icon" viewBox="0 0 1024 1024" width="18" height="18" fill="currentColor"><path d="M361.5 727.8c-119.1 0-215.9-96.9-215.9-215.9 0-119.1 96.9-215.9 215.9-215.9 2.3 0 4.6-0.2 6.8-0.6v58.3c0 12.3 14 19.4 23.9 12.1l132.6-97.6c8.1-6 8.1-18.2 0-24.2l-132.6-97.6c-9.9-7.3-23.9-0.2-23.9 12.1v58.1c-2.2-0.4-4.5-0.6-6.8-0.6-39.8 0-78.5 7.9-115 23.4-35.2 15-66.8 36.3-94 63.5s-48.6 58.8-63.5 94c-15.5 36.5-23.4 75.2-23.4 115s7.9 78.5 23.4 115c15 35.2 36.3 66.8 63.5 94s58.8 48.6 94 63.5c36.5 15.5 75.2 23.4 115 23.4 22.1 0 40-17.9 40-40s-17.9-40-40-40zM938.2 396.9c-15-35.2-36.3-66.8-63.5-94s-58.8-48.6-94-63.5c-36.5-15.5-75.2-23.4-115-23.4-22.1 0-40 17.9-40 40s17.9 40 40 40c119.1 0 215.9 96.9 215.9 215.9 0 119.1-96.9 215.9-215.9 215.9-4.1 0-8.1 0.6-11.8 1.8v-60.8c0-12.3-14-19.4-23.9-12.1l-132.6 97.6c-8.1 6-8.1 18.2 0 24.2L629.9 876c9.9 7.3 23.9 0.2 23.9-12.1V806c3.7 1.2 7.7 1.8 11.8 1.8 39.8 0 78.5-7.9 115-23.4 35.2-15 66.8-36.3 94-63.5s48.6-58.8 63.5-94c15.5-36.5 23.4-75.2 23.4-115s-7.8-78.5-23.3-115z"/><path d="M512.8 660.6c22.1-0.1 39.9-18.1 39.8-40.2l-1.2-214.1c-0.1-22-18-39.8-40-39.8h-0.2c-22.1 0.1-39.9 18.1-39.8 40.2l1.2 214.1c0.1 22 18 39.8 40 39.8h0.2z"/></svg></button>
+        </div>
+        <div class="mv-vol-wrap"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" id="mv-vol-icon" style="cursor:pointer" onclick="toggleMute()"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/></svg><div class="mv-vol-track" id="mv-vol-track"><div class="mv-vol-fill" id="mv-vol-fill"></div></div></div>
+        <div class="mv-footer-row"><button class="mv-footer-btn" id="txt-mv-lyrics-tab" onclick="toggleComments()" title="歌词/评论"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></button><button class="mv-footer-btn" id="txt-mv-library-tab" onclick="mobileToggleLibrary()" title="歌曲库"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button></div>
+    </div>
+
+    <!-- 移动端底部栏 -->
+    <div class="mobile-player-bar" id="mobile-player-bar">
+        <div class="mobile-progress-wrap"><span class="mobile-time" id="mob-curr">0:00</span><input type="range" id="mob-seek" class="mobile-seek" min="0" max="100" value="0"><span class="mobile-time" id="mob-dur">0:00</span></div>
+        <div class="mobile-ctrl-row">
+            <button class="mobile-ctrl-btn" onclick="toggleShuffle()" id="mob-shuffle-btn"><svg viewBox="0 0 1024 1024" width="18" height="18" fill="currentColor"><path d="M914.2 705L796.4 596.8c-8.7-8-22.7-1.8-22.7 10V688c-69.5-1.8-134-39.7-169.3-99.8l-45.1-77 47-80.2c34.9-59.6 98.6-97.4 167.4-99.8v60.1c0 11.8 14 17.9 22.7 10l117.8-108.1c5.8-5.4 5.8-14.6 0-19.9L796.4 165c-8.7-8-22.7-1.8-22.7 10v76H758c-4.7 0-9.3 0.8-13.5 2.3-36.5 4.7-72 16.6-104.1 35-42.6 24.4-78.3 59.8-103.1 102.2L513 432l-24.3-41.5c-24.8-42.4-60.5-77.7-103.1-102.2C343 263.9 294.5 251 245.3 251H105c-22.1 0-40 17.9-40 40s17.9 40 40 40h140.3c71.4 0 138.3 38.3 174.4 99.9l47 80.2-45.1 77c-36.2 61.7-103 99.9-174.4 99.9H105c-22.1 0-40 17.9-40 40s17.9 40 40 40l142 0.1h0.2c49.1 0 97.6-12.9 140.2-37.3 42.7-24.4 78.3-59.8 103.2-102.2l22.4-38.3 22.4 38.3c24.8 42.4 60.5 77.8 103.2 102.2 33.1 18.9 69.6 30.9 107.3 35.4 3.8 1.2 7.8 1.8 11.9 1.8l15.9 0.1v55c0 11.8 14 17.9 22.7 10L914.2 725c5.9-5.5 5.9-14.7 0-20z"/></svg></button>
+            <button class="mobile-ctrl-btn" onclick="prev()"><img src="./img/apple music icon_08.svg" width="20" height="20"></button>
+            <div class="mobile-play-btn-wrap"><button class="mobile-play-btn" onclick="togglePlay()" id="mob-play-btn"><img src="./img/apple music icon_06.svg" width="28" height="28"></button></div>
+            <button class="mobile-ctrl-btn" onclick="next()"><img src="./img/apple music icon_09.svg" width="20" height="20"></button>
+            <button class="mobile-ctrl-btn" onclick="toggleRepeat()" id="mob-repeat-btn"><svg class="icon" viewBox="0 0 1024 1024" width="18" height="18" fill="currentColor"><path d="M361.5 727.8c-119.1 0-215.9-96.9-215.9-215.9 0-119.1 96.9-215.9 215.9-215.9 2.3 0 4.6-0.2 6.8-0.6v58.3c0 12.3 14 19.4 23.9 12.1l132.6-97.6c8.1-6 8.1-18.2 0-24.2l-132.6-97.6c-9.9-7.3-23.9-0.2-23.9 12.1v58.1c-2.2-0.4-4.5-0.6-6.8-0.6-39.8 0-78.5 7.9-115 23.4-35.2 15-66.8 36.3-94 63.5s-48.6 58.8-63.5 94c-15.5 36.5-23.4 75.2-23.4 115s7.9 78.5 23.4 115c15 35.2 36.3 66.8 63.5 94s58.8 48.6 94 63.5c36.5 15.5 75.2 23.4 115 23.4 22.1 0 40-17.9 40-40s-17.9-40-40-40zM938.2 396.9c-15-35.2-36.3-66.8-63.5-94s-58.8-48.6-94-63.5c-36.5-15.5-75.2-23.4-115-23.4-22.1 0-40 17.9-40 40s17.9 40 40 40c119.1 0 215.9 96.9 215.9 215.9 0 119.1-96.9 215.9-215.9 215.9-4.1 0-8.1 0.6-11.8 1.8v-60.8c0-12.3-14-19.4-23.9-12.1l-132.6 97.6c-8.1 6-8.1 18.2 0 24.2L629.9 876c9.9 7.3 23.9 0.2 23.9-12.1V806c3.7 1.2 7.7 1.8 11.8 1.8 39.8 0 78.5-7.9 115-23.4 35.2-15 66.8-36.3 94-63.5s48.6-58.8 63.5-94c15.5-36.5 23.4-75.2 23.4-115s-7.8-78.5-23.3-115z"/><path d="M512.8 660.6c22.1-0.1 39.9-18.1 39.8-40.2l-1.2-214.1c-0.1-22-18-39.8-40-39.8h-0.2c-22.1 0.1-39.9 18.1-39.8 40.2l1.2 214.1c0.1 22 18 39.8 40 39.8h0.2z"/></svg></button>
+        </div>
+    </div>
+
+<!-- 歌单抽屉（由 JS 动态创建内容） -->
+<div id="playlist-drawer-root"></div>
+
+<!-- 自定义确认/输入对话框 -->
+<div class="modal-overlay" id="confirm-dialog-modal">
+    <div class="confirm-dialog glass-card">
+        <div class="confirm-dialog-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <div class="confirm-dialog-title" id="confirm-dialog-title"></div>
+        <div class="confirm-dialog-msg" id="confirm-dialog-msg"></div>
+        <div class="confirm-dialog-actions">
+            <button class="confirm-dialog-btn confirm-dialog-cancel" id="txt-confirm-cancel">Cancel</button>
+            <button class="confirm-dialog-btn confirm-dialog-ok" id="txt-confirm-ok">Confirm</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="prompt-dialog-modal">
+    <div class="confirm-dialog glass-card">
+        <div class="confirm-dialog-title" id="prompt-dialog-title"></div>
+        <input class="prompt-dialog-input" id="prompt-dialog-input" type="text" placeholder="">
+        <div class="confirm-dialog-actions">
+            <button class="confirm-dialog-btn confirm-dialog-cancel" id="txt-prompt-cancel">Cancel</button>
+            <button class="confirm-dialog-btn confirm-dialog-ok" id="txt-prompt-ok">OK</button>
+        </div>
+    </div>
+</div>
+
+<!-- 首次使用声明弹窗（仅一次/会话，点击外部不可关闭） -->
+<div class="modal-overlay" id="first-time-modal">
+    <div class="first-time-dialog glass-card">
+        <div class="first-time-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                <path d="M2 17l10 5 10-5"/>
+                <path d="M2 12l10 5 10-5"/>
+            </svg>
+        </div>
+        <div class="first-time-title" id="txt-welcome-title">Welcome</div>
+        <div class="first-time-msg" id="txt-app-disclaimer-sub">
+            This application is for learning purposes only.
+        </div>
+        <ul class="first-time-list">
+            <li id="txt-disclaimer-1">本应用仅供学习研究使用，不得用于任何商业用途或侵权行为</li>
+            <li id="txt-disclaimer-2">Cookie 为您的个人登录凭证，请勿向他人泄露；建议定期更换密码以保障账号安全</li>
+            <li id="txt-disclaimer-3"><strong>VIP 歌曲收听需满足两个条件：</strong>① 在设置中填写有效的平台 Cookie ② 该 Cookie 对应的账号已开通该平台的 VIP 会员。缺一不可。</li>
+            <li id="txt-disclaimer-4">使用本应用即表示您已了解并同意自行承担相关风险与责任</li>
+        </ul>
+        <div class="first-time-divider"></div>
+        <div class="first-time-footer">
+            <button class="first-time-btn" id="txt-i-understand-btn">I Understand</button>
+        </div>
+    </div>
+</div>
+
+<style>
+.confirm-dialog {
+    width: 380px; max-width: 90vw;
+    padding: 32px 28px 24px;
+    text-align: center;
+}
+.confirm-dialog-icon {
+    width: 48px; height: 48px; margin: 0 auto 16px;
+    border-radius: 50%;
+    background: rgba(250,45,72,0.12);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--accent);
+}
+.confirm-dialog-icon svg { width: 24px; height: 24px; }
+.confirm-dialog-title {
+    font-family: var(--font-display); font-size: var(--text-lg); font-weight: var(--weight-bold); color: var(--text-primary);
+    margin-bottom: 8px; letter-spacing: var(--tracking-tight);
+}
+.confirm-dialog-msg {
+    font-size: var(--text-sm); color: var(--text-secondary); line-height: var(--leading-normal);
+    margin-bottom: 24px; opacity: 0.75;
+}
+.confirm-dialog-actions {
+    display: flex; gap: 12px; justify-content: center;
+}
+.confirm-dialog-btn {
+    padding: 10px 28px; border-radius: 10px;
+    font-size: var(--text-base); font-weight: var(--weight-semibold); cursor: pointer;
+    border: none; letter-spacing: 0.2px;
+    transition: all 0.2s ease;
+    min-width: 100px;
+}
+.confirm-dialog-cancel {
+    background: rgba(255,255,255,0.06);
+    color: var(--text-secondary);
+}
+.confirm-dialog-cancel:hover { background: rgba(255,255,255,0.12); color: var(--text-primary); }
+.confirm-dialog-ok {
+    background: var(--accent);
+    color: var(--text-primary);
+}
+.confirm-dialog-ok:hover { filter: brightness(1.15); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(250,45,72,0.35); }
+.confirm-dialog-ok:active { transform: scale(0.96); }
+.prompt-dialog-input {
+    width: 100%; padding: 12px 16px; margin-bottom: 20px;
+    background: rgba(255,255,255,0.06); border: 1px solid var(--glass-border);
+    border-radius: 10px; color: var(--text-primary); font-size: var(--text-base);
+    font-family: var(--font-body);
+    outline: none; box-sizing: border-box;
+    transition: border-color 0.2s;
+}
+.prompt-dialog-input:focus { border-color: var(--accent); }
+#confirm-dialog-modal, #prompt-dialog-modal { z-index: 10000 !important; }
+#move-modal { z-index: 1100; }
+#confirm-dialog-modal.active .confirm-dialog,
+#prompt-dialog-modal.active .confirm-dialog {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+    transition: all 0.3s cubic-bezier(0.34,1.56,0.64,1);
+}
+#confirm-dialog-modal .confirm-dialog,
+#prompt-dialog-modal .confirm-dialog {
+    transform: scale(0.9) translateY(10px);
+    opacity: 0;
+}
+
+/* 首次使用声明弹窗 */
+#first-time-modal { z-index: 10001 !important; }
+#first-time-modal.active .first-time-dialog {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+    transition: all 0.5s cubic-bezier(0.34,1.56,0.64,1);
+}
+#first-time-modal .first-time-dialog {
+    transform: scale(0.92) translateY(12px);
+    opacity: 0;
+    transition: all 0.35s ease;
+}
+.first-time-dialog {
+    width: 440px; max-width: 92vw;
+    padding: 44px 36px 36px;
+    text-align: center;
+}
+.first-time-icon {
+    width: 60px; height: 60px; margin: 0 auto 22px;
+    border-radius: 50%;
+    background: linear-gradient(145deg, rgba(250,45,72,0.18), rgba(250,45,72,0.04));
+    display: flex; align-items: center; justify-content: center;
+    color: var(--accent);
+    box-shadow: 0 2px 16px rgba(250,45,72,0.12), inset 0 -2px 8px rgba(0,0,0,0.15);
+}
+.first-time-icon svg { width: 28px; height: 28px; }
+.first-time-title {
+    font-family: var(--font-display);
+    font-size: clamp(20px, 5vw + 8px, 26px);
+    font-weight: var(--weight-extrabold);
+    color: var(--text-primary);
+    margin-bottom: 10px;
+    letter-spacing: var(--tracking-tight);
+    line-height: var(--leading-tight);
+}
+.first-time-msg {
+    font-family: var(--font-body);
+    font-size: var(--text-base);
+    color: var(--text-secondary);
+    line-height: var(--leading-snug);
+    margin-bottom: 0;
+    opacity: 0.78;
+    text-wrap: pretty;
+    word-spacing: 0.03em;
+}
+.first-time-list {
+    list-style: none;
+    padding: 0;
+    margin: 18px 0 0;
+    text-align: left;
+}
+.first-time-list li {
+    font-family: var(--font-body-cn);
+    font-size: clamp(13px, 2.6vw, 14.5px);
+    color: var(--text-secondary);
+    line-height: var(--leading-relaxed);
+    padding: 9px 0 9px 24px;
+    position: relative;
+    opacity: 0;
+    transform: translateY(6px);
+    animation: ftItemIn 0.4s cubic-bezier(0.34,1.56,0.64,1) forwards;
+    text-wrap: pretty;
+    word-break: break-word;
+    letter-spacing: 0.02em;
+    transition: background 0.25s ease, color 0.25s ease;
+    border-radius: 8px;
+    margin: 2px 0;
+}
+.first-time-list li:nth-child(1) { animation-delay: 0.08s; }
+.first-time-list li:nth-child(2) { animation-delay: 0.16s; }
+.first-time-list li:nth-child(3) { animation-delay: 0.24s; }
+.first-time-list li:nth-child(4) { animation-delay: 0.32s; }
+@keyframes ftItemIn {
+    to { opacity: 0.82; transform: translateY(0); }
+}
+.first-time-list li::before {
+    content: '';
+    position: absolute;
+    left: 6px; top: 17px;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    opacity: 0.65;
+    flex-shrink: 0;
+}
+.first-time-list li:hover {
+    background: rgba(255,255,255,0.03);
+    color: var(--text-primary);
+    opacity: 1;
+}
+.first-time-list li strong {
+    color: var(--accent-amber);
+    font-weight: var(--weight-semibold);
+}
+.first-time-list li:nth-child(3) {
+    background: linear-gradient(135deg, rgba(255,159,10,0.06), rgba(255,159,10,0.02));
+    border: 1px solid rgba(255,159,10,0.12);
+    padding-left: 28px;
+    border-radius: 10px;
+}
+.first-time-list li:nth-child(3)::before {
+    left: 10px; top: 16px;
+    width: 7px; height: 7px;
+    background: var(--accent-amber);
+    opacity: 0.85;
+    box-shadow: 0 0 6px rgba(255,159,10,0.35);
+}
+.first-time-list li:nth-child(3):hover {
+    background: linear-gradient(135deg, rgba(255,159,10,0.10), rgba(255,159,10,0.04));
+    border-color: rgba(255,159,10,0.22);
+}
+.first-time-divider {
+    width: 40px; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    border-radius: 2px;
+    margin: 26px auto;
+    opacity: 0.45;
+}
+.first-time-footer {
+    display: flex; justify-content: center;
+}
+.first-time-btn {
+    padding: 13px 48px;
+    border-radius: 14px;
+    font-family: var(--font-body);
+    font-size: var(--text-md);
+    font-weight: var(--weight-semibold);
+    cursor: pointer;
+    border: none;
+    background: var(--accent);
+    color: var(--text-primary);
+    letter-spacing: 0.08em;
+    transition: all 0.28s cubic-bezier(0.34,1.56,0.64,1);
+    min-width: 170px;
+    box-shadow: 0 2px 12px rgba(250,45,72,0.2);
+}
+.first-time-btn:hover {
+    filter: brightness(1.12);
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 8px 28px rgba(250,45,72,0.38), 0 2px 8px rgba(250,45,72,0.15);
+}
+.first-time-btn:active {
+    transform: scale(0.97) translateY(0);
+    box-shadow: 0 2px 8px rgba(250,45,72,0.25);
+}
+</style>
+
+<!-- ============================================================
+     模块化 JS（按依赖顺序加载）
+
+     加载顺序：
+     [1] config.js   — 变量/常量/i18n/全局状态（基础层，最先）
+     [2] api.js      — MetingFetch/B站/歌词抓取（被其他模块依赖）
+     [3] ui.js       — 弹窗控制/Toast（纯UI，无依赖）
+     [4] player.js   — 播放引擎/进度条/封面取色（依赖config+api）
+     [5] lyrics.js   — 瀑布流歌词引擎（依赖player+api）
+     [6] net-search.js — 网络搜歌（依赖api+ui+player）
+     [7] playlist.js — 歌单管理（依赖ui+player）
+     [8] mobile.js   — 移动端逻辑（依赖player）
+     [9] ai.js       — AI功能（依赖ui+config）
+    [10] visualizer.js — Apple Music 风格背景（无内部依赖）
+    [11] app.js      — 设置/封面/歌词搜索/键盘/MediaCard/初始化入口
+     ============================================================ -->
+    <script src="./js/utils.js"></script>
+    <script src="./js/config.js"></script>
+    <script src="./js/theme.js"></script>
+    <script src="./js/api.js"></script>
+    <script src="./js/qr-login.js"></script>
+    <script src="./js/ui.js"></script>
+    <script src="./js/player.js"></script>
+    <script src="./js/lyrics.js"></script>
+    <script src="./js/net-search.js"></script>
+    <script src="./js/playlist.js"></script>
+    <script src="./js/download.js"></script>
+    <script src="./js/mobile.js"></script>
+    <script src="./js/ai.js"></script>
+    <script src="./js/visualizer.js"></script>
+    <script src="./js/app.js"></script>
+<!-- 启动 -->
+<script>
+(function() {
+    var _ls = {
+        getItem: function(k) { try { return localStorage.getItem(k); } catch(e) { return null; } },
+        setItem: function(k, v) { try { localStorage.setItem(k, v); } catch(e) {} },
+        removeItem: function(k) { try { localStorage.removeItem(k); } catch(e) {} }
+    };
+    var origGet = Object.getOwnPropertyDescriptor(Storage.prototype, 'getItem');
+    if (origGet && origGet.value) {
+        Storage.prototype._safeGetItem = function(k) { try { return origGet.value.call(this, k); } catch(e) { return null; } };
+        Storage.prototype._safeSetItem = function(k, v) { try { this.setItem(k, v); } catch(e) {} };
+    }
+    window._safeLS = _ls;
+    console.log('[safeLS] localStorage safety wrapper installed');
+})();
+if (window.appRuntime && window.appRuntime.isElectron) {
+    document.body.classList.add('electron-app');
+
+    document.addEventListener('contextmenu', function(e) { e.preventDefault(); });
+
+    window.addEventListener('DOMContentLoaded', () => {
+        const tbMax = document.getElementById('txt-maximize');
+        const tbFs = document.getElementById('txt-fullscreen');
+
+        const observer = new MutationObserver(() => {
+            const state = document.body.getAttribute('data-window-state');
+            const tb = document.getElementById('electron-titlebar');
+            if (tb) tb.style.display = (state === 'fullscreen') ? 'none' : 'flex';
+            document.body.style.paddingTop = (state === 'fullscreen') ? '0px' : '32px';
+            if (tbMax) {
+                tbMax.innerHTML = state === 'maximized'
+                    ? '<svg viewBox="0 0 16 16" stroke="currentColor" fill="none" stroke-width="1.5"><rect x="3" y="1" width="10" height="10" rx="1"/><rect x="1" y="3" width="10" height="10" rx="1"/></svg>'
+                    : '<svg viewBox="0 0 16 16" stroke="currentColor" fill="none" stroke-width="1.5"><rect x="2" y="2" width="12" height="12" rx="1"/></svg>';
+            }
+            if (tbFs) {
+                tbFs.innerHTML = state === 'fullscreen'
+                    ? '<svg viewBox="0 0 16 16" stroke="currentColor" fill="none" stroke-width="1.5"><path d="M5 2H2v3M11 2h3v3M5 14H2v-3M11 14h3v-3" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+                    : '<svg viewBox="0 0 16 16" stroke="currentColor" fill="none" stroke-width="1.5"><polyline points="2,5 2,2 5,2"/><polyline points="14,11 14,14 11,14"/><polyline points="11,2 14,2 14,5"/><polyline points="5,14 2,14 2,11"/></svg>';
+                tbFs.title = state === 'fullscreen' ? i18n[curLang].exitFullscreen : i18n[curLang].fullscreen;
+            }
+        });
+        observer.observe(document.body, { attributes: true, attributeFilter: ['data-window-state'] });
+    });
+}
+
+if ('serviceWorker' in navigator && !(window.appRuntime && window.appRuntime.isElectron) && location.protocol !== 'file:') {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+}
+init();
+</script>
+<!-- macOS 液态玻璃 SVG 滤镜 -->
+<svg style="display:none" aria-hidden="true">
+    <filter id="glass-distortion" x="-20%" y="-20%" width="140%" height="140%" filterUnits="objectBoundingBox">
+        <feTurbulence type="fractalNoise" baseFrequency="0.012 0.012" numOctaves="2" seed="7" result="turbulence"/>
+        <feComponentTransfer in="turbulence" result="mapped">
+            <feFuncR type="gamma" amplitude="1" exponent="8" offset="0.5"/>
+            <feFuncG type="gamma" amplitude="0" exponent="1" offset="0"/>
+            <feFuncB type="gamma" amplitude="0" exponent="1" offset="0.5"/>
+        </feComponentTransfer>
+        <feGaussianBlur in="turbulence" stdDeviation="2.5" result="softMap"/>
+        <feSpecularLighting in="softMap" surfaceScale="4" specularConstant="0.8" specularExponent="80" lighting-color="white" result="specLight">
+            <fePointLight x="-150" y="-150" z="250"/>
+        </feSpecularLighting>
+        <feComposite in="specLight" operator="arithmetic" k1="0" k2="1" k3="0.6" k4="0" result="litImage"/>
+        <feDisplacementMap in="SourceGraphic" in2="softMap" scale="80" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+</svg>
+</body>
+</html>

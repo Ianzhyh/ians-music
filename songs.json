@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "version": 1,
+  "tracks": [
+    { "id": "d1", "src": "./songs/大笨钟 - 周杰伦.flac", "title": "大笨钟", "artist": "周杰伦", "group": "Default", "cover": "" },
+    { "id": "d2", "src": "./songs/爱的飞行日记 - 周杰伦杨瑞代.flac", "title": "爱的飞行日记", "artist": "周杰伦 & 杨瑞代", "group": "Default", "cover": "" },
+    { "id": "d3", "src": "./songs/飞机场的10：30.flac", "title": "飞机场的10：30", "artist": "陶喆", "group": "Default", "cover": "" },
+    { "id": "s1", "src": "./songs/周杰伦 - 太阳之子_EM.flac", "title": "太阳之子", "artist": "周杰伦", "group": "太阳之子", "cover": "" },
+    { "id": "s2", "src": "./songs/周杰伦 - 西西里_EM.flac", "title": "西西里", "artist": "周杰伦", "group": "太阳之子", "cover": "" },
+    { "id": "s3", "src": "./songs/周杰伦 - 那天下雨了_EM.flac", "title": "那天下雨了", "artist": "周杰伦", "group": "太阳之子", "cover": "" },
+    { "id": "s4", "src": "./songs/周杰伦 - 湘女多情_EM.flac", "title": "湘女多情", "artist": "周杰伦", "group": "太阳之子", "cover": "" },
+    { "id": "s5", "src": "./songs/周杰伦 - 谁稀罕_EM.flac", "title": "谁稀罕", "artist": "周杰伦", "group": "太阳之子", "cover": "" },
+    { "id": "s6", "src": "./songs/周杰伦 - 七月的极光_EM.flac", "title": "七月的极光", "artist": "周杰伦", "group": "太阳之子", "cover": "" },
+    { "id": "s7", "src": "./songs/周杰伦 - 爱琴海_EM.flac", "title": "爱琴海", "artist": "周杰伦", "group": "太阳之子", "cover": "" },
+    { "id": "s8", "src": "./songs/周杰伦 - I Do_EM.flac", "title": "I Do", "artist": "周杰伦", "group": "太阳之子", "cover": "" },
+    { "id": "s9", "src": "./songs/周杰伦 - 圣徒_EM.flac", "title": "圣徒", "artist": "周杰伦", "group": "太阳之子", "cover": "" },
+    { "id": "s10", "src": "./songs/周杰伦 - 女儿殿下_EM.flac", "title": "女儿殿下", "artist": "周杰伦", "group": "太阳之子", "cover": "" },
+    { "id": "s11", "src": "./songs/周杰伦 - 淘金小镇_EM.flac", "title": "淘金小镇", "artist": "周杰伦", "group": "太阳之子", "cover": "" },
+    { "id": "s12", "src": "./songs/周杰伦 - 乡间的路_EM.flac", "title": "乡间的路", "artist": "周杰伦", "group": "太阳之子", "cover": "" },
+    { "id": "s13", "src": "./songs/周杰伦 - 圣诞星 (feat_ 杨瑞代)_EM.flac", "title": "圣诞星", "artist": "周杰伦 & 杨瑞代", "group": "太阳之子", "cover": "" }
+  ]
+}

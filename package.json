@@ -1,0 +1,73 @@
+{
+  "name": "ians-music",
+  "version": "2.5.0",
+  "description": "IAN'S MUSIC — 多平台桌面音乐播放器",
+  "main": "electron-main.js",
+  "author": "Ian",
+  "license": "MIT",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder",
+    "postinstall": "cd meting-api && npm install"
+  },
+  "build": {
+    "appId": "com.ian.music",
+    "productName": "IansMusic",
+    "copyright": "Copyright © 2026 Ian",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "index.html",
+      "manifest.json",
+      "sw.js",
+      "songs.json",
+      "preload.js",
+      "electron-main.js",
+      "css/**/*",
+      "js/**/*",
+      "img/**/*",
+      "!node_modules",
+      "!**/.git/**"
+    ],
+    "extraResources": [
+      {
+        "from": "meting-api",
+        "to": "meting-api",
+        "filter": [
+          "**/*",
+          "node_modules/**/*",
+          "!.git",
+          "!.gitignore",
+          "!**/.git/**"
+        ]
+      }
+    ],
+    "extraMetadata": {
+      "main": "electron-main.js"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "img/icon.png",
+      "artifactName": "IANS_MUSIC_Setup_v${version}.exe",
+      "signAndEditExecutable": false
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "artifactName": "IANS_MUSIC_Setup_v${version}.exe",
+      "installerSidebar": "img/installer-welcome.bmp",
+      "uninstallerSidebar": "img/installer-welcome.bmp",
+      "include": "build/installer.nsh",
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "IANS MUSIC",
+      "deleteAppDataOnUninstall": false
+    }
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "24.13.3"
+  }
+}
